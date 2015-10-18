@@ -1,8 +1,9 @@
 package com.clubdynamic.addons.importer.persons.swimming;
 
+import static org.hamcrest.Matchers.nullValue;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-
 import com.clubdynamic.dto.person.PersonWriteDto;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,6 +39,8 @@ public class LineParserTest {
     assertThat(person.street, equalTo("Musterstraße 1"));
     assertThat(person.zip, equalTo("12345"));
     assertThat(person.city, equalTo("Berlin"));
+    assertThat(person.phone, equalTo("030/123123"));
+    assertThat(person.mobile, nullValue());
   }
 }
 
