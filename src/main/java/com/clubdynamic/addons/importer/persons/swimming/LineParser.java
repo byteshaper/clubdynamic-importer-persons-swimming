@@ -23,24 +23,25 @@ public class LineParser {
   private static final int COL_CITY = 6;
   private static final int COL_PHONE = 7;
   private static final int COL_MOBILE = 9;
+  private static final int COL_EMAIL = 10;
 
   public PersonWriteDto parse(String line) {
     PersonWriteDto person = new PersonWriteDto();
     String[] fields = line.split(FIELD_SEPARATOR);
-    // System.err.println(line);
     person.firstName = nonEmptyTrimmedStringOrNull(fields[COL_FIRSTNAME]);
     person.lastName = nonEmptyTrimmedStringOrNull(fields[COL_LASTNAME]);
-    person.birthday = parseDate(fields);
+    person.birthday = parseBirthday(fields);
     person.gender = nonEmptyTrimmedStringOrNull(fields[COL_GENDER]);
     person.street = nonEmptyTrimmedStringOrNull(fields[COL_STREET]);
     person.zip = nonEmptyTrimmedStringOrNull(fields[COL_ZIP]);
     person.city = nonEmptyTrimmedStringOrNull(fields[COL_CITY]);
     person.phone = nonEmptyTrimmedStringOrNull(fields[COL_PHONE]);
     person.mobile = nonEmptyTrimmedStringOrNull(fields[COL_MOBILE]);
+    person.emailAddress = nonEmptyTrimmedStringOrNull(fields[COL_EMAIL]);
     return person;
   }
 
-  private String parseDate(String[] fields) {
+  private String parseBirthday(String[] fields) {
     try {
       return LocalDate.parse(fields[COL_BIRTHDAY], DATE_FORMATTER).toString();
     } catch (DateTimeParseException e) {

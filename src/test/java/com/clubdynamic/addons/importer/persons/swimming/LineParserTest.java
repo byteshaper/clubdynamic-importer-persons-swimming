@@ -41,6 +41,7 @@ public class LineParserTest {
     assertThat(person.city, equalTo("Berlin"));
     assertThat(person.phone, equalTo("030/123123"));
     assertThat(person.mobile, nullValue());
+    assertThat(person.emailAddress, equalTo("muster.mann@example.com"));
   }
 }
 
