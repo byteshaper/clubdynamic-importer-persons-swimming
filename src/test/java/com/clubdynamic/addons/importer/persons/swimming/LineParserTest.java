@@ -20,6 +20,7 @@ public class LineParserTest {
 
   @BeforeClass
   public static void readCsvLines() throws Exception {
+    
     csvLines =
         Files.readAllLines(Paths.get(LineParserTest.class.getClassLoader().getResource("persons.csv").toURI()));
   }
