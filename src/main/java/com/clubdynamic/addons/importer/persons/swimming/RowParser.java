@@ -35,7 +35,7 @@ public class RowParser {
     String[] fields = line.split(FIELD_SEPARATOR);
     person.firstName = nonEmptyTrimmedStringOrNull(fields[COL_FIRSTNAME]);
     person.lastName = nonEmptyTrimmedStringOrNull(fields[COL_LASTNAME]);
-    person.birthday = parseBirthday(fields);
+    person.birthday = parseDate(fields, COL_BIRTHDAY, true);
     person.gender = nonEmptyTrimmedStringOrNull(fields[COL_GENDER]);
     person.street = nonEmptyTrimmedStringOrNull(fields[COL_STREET]);
     person.zip = nonEmptyTrimmedStringOrNull(fields[COL_ZIP]);
@@ -45,16 +45,19 @@ public class RowParser {
     person.emailAddress = nonEmptyTrimmedStringOrNull(fields[COL_EMAIL]);
     
     MembershipCreateDto membership = new MembershipCreateDto();
-    membership.firstDay = nonEmptyTrimmedStringOrNull(fields[COL_FIRST_DAY]);
+    membership.firstDay = parseDate(fields, COL_FIRST_DAY, true);
     
-    return new RowData(person, membership, Optional.ofNullable(nonEmptyTrimmedStringOrNull(fields[COL_LAST_DAY])));
+    Optional<String> lastDay = Optional.ofNullable(parseDate(fields, COL_LAST_DAY, false));
+    return new RowData(person, membership, lastDay);
   }
 
-  private String parseBirthday(String[] fields) {
+  private String parseDate(String[] fields, int colIndex, boolean warnOnNull) {
     try {
-      return LocalDate.parse(fields[COL_BIRTHDAY], DATE_FORMATTER).toString();
+      return LocalDate.parse(fields[colIndex], DATE_FORMATTER).toString();
     } catch (DateTimeParseException e) {
-      LOGGER.warn("Unparseable date of birth '{}' in line {}", fields[COL_BIRTHDAY], fieldsToString(fields));
+      if(warnOnNull) {
+        LOGGER.warn("Unparseable date '{}' in line {}", fields[colIndex], fieldsToString(fields));
+      }
       return null;
     }
   }

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import com.clubdynamic.dto.membership.MembershipCreateDto;
 import com.clubdynamic.dto.person.PersonWriteDto;
@@ -48,7 +49,7 @@ public class RowParserTest {
     assertThat(person.emailAddress, equalTo("muster.mann@example.com"));
     
     MembershipCreateDto membership = rowData.membership;
-    assertThat(membership.firstDay, equalTo("21.02.2015"));
+    assertThat(membership.firstDay, equalTo("2015-02-21"));
     
     assertFalse(rowData.lastDay.isPresent());
   }
@@ -64,12 +65,34 @@ public class RowParserTest {
     assertThat(person.street, equalTo("Musterstraße 134"));
     assertThat(person.zip, equalTo("12343"));
     assertThat(person.city, equalTo("Berlin"));
-    assertThat(person.phone, equalTo("030/1231243"));
-    assertThat(person.mobile, nullValue());
-    assertThat(person.emailAddress, equalTo("muster.mann@example.com"));
+    assertThat(person.phone, equalTo("0301231243"));
+    assertThat(person.mobile,equalTo("0151123123"));
+    assertThat(person.emailAddress, equalTo("muster.martin@example.com"));
     
     MembershipCreateDto membership = rowData.membership;
-    assertThat(membership.firstDay, equalTo("21.02.2015"));
+    assertThat(membership.firstDay, equalTo("2014-05-01"));
+    
+    assertTrue(rowData.lastDay.isPresent());
+    assertThat(rowData.lastDay.get(), equalTo("2015-06-30"));
+  }
+  
+  @Test
+  public void thirdRow() {
+    RowData rowData = lineParser.parse(csvLines.get(3));
+    PersonWriteDto person = rowData.person;
+    assertThat(person.firstName, equalTo("Heinz"));
+    assertThat(person.lastName, equalTo("Mustermensch"));
+    assertThat(person.birthday, equalTo("1997-12-22"));
+    assertThat(person.gender, equalTo("M"));
+    assertThat(person.street, equalTo("Musterstraße 134"));
+    assertThat(person.zip, equalTo("98765"));
+    assertThat(person.city, equalTo("Kuhdorf"));
+    assertThat(person.phone, nullValue());
+    assertThat(person.mobile, nullValue());
+    assertThat(person.emailAddress, nullValue());
+    
+    MembershipCreateDto membership = rowData.membership;
+    assertThat(membership.firstDay, equalTo("2015-05-12"));
     
     assertFalse(rowData.lastDay.isPresent());
   }
