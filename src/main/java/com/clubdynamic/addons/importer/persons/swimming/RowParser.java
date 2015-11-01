@@ -29,24 +29,24 @@ public class RowParser {
   private static final int COL_EMAIL = 10;
   private static final int COL_FIRST_DAY = 35;
   private static final int COL_LAST_DAY = 36;
-  
+
   public RowData parse(String line) {
     PersonWriteDto person = new PersonWriteDto();
     String[] fields = line.split(FIELD_SEPARATOR);
-    person.firstName = nonEmptyTrimmedStringOrNull(fields[COL_FIRSTNAME]);
-    person.lastName = nonEmptyTrimmedStringOrNull(fields[COL_LASTNAME]);
+    person.firstName = nonEmptyTrimmedStringOrDie(fields, COL_FIRSTNAME);
+    person.lastName = nonEmptyTrimmedStringOrDie(fields, COL_LASTNAME);
     person.birthday = parseDate(fields, COL_BIRTHDAY, true);
-    person.gender = nonEmptyTrimmedStringOrNull(fields[COL_GENDER]);
+    person.gender = nonEmptyTrimmedStringOrDie(fields, COL_GENDER);
     person.street = nonEmptyTrimmedStringOrNull(fields[COL_STREET]);
     person.zip = nonEmptyTrimmedStringOrNull(fields[COL_ZIP]);
     person.city = nonEmptyTrimmedStringOrNull(fields[COL_CITY]);
     person.phone = nonEmptyTrimmedStringOrNull(fields[COL_PHONE]);
     person.mobile = nonEmptyTrimmedStringOrNull(fields[COL_MOBILE]);
     person.emailAddress = nonEmptyTrimmedStringOrNull(fields[COL_EMAIL]);
-    
+
     MembershipCreateDto membership = new MembershipCreateDto();
     membership.firstDay = parseDate(fields, COL_FIRST_DAY, true);
-    
+
     Optional<String> lastDay = Optional.ofNullable(parseDate(fields, COL_LAST_DAY, false));
     return new RowData(person, membership, lastDay);
   }
@@ -55,11 +55,21 @@ public class RowParser {
     try {
       return LocalDate.parse(fields[colIndex], DATE_FORMATTER).toString();
     } catch (DateTimeParseException e) {
-      if(warnOnNull) {
-        LOGGER.warn("Unparseable date '{}' in line {}", fields[colIndex], fieldsToString(fields));
+      if (warnOnNull) {
+        LOGGER.warn("Unparseable date '{}' in row {}", fields[colIndex], fieldsToString(fields));
       }
       return null;
     }
+  }
+
+  private String nonEmptyTrimmedStringOrDie(String[] fields, int colIndex) {
+    String result = fields[colIndex].trim();
+
+    if (result.isEmpty()) {
+      throw new ParseException("Empty mandatory column " + colIndex + " in row " + fieldsToString(fields) + ".");
+    }
+
+    return result;
   }
 
   private String nonEmptyTrimmedStringOrNull(String input) {
