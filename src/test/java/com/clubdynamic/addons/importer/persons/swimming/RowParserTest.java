@@ -33,7 +33,7 @@ public class RowParserTest {
   }
 
   @Test
-  public void normalLineWithMemberAndLandline() {
+  public void firstRow() {
     RowData rowData = lineParser.parse(csvLines.get(1));
     PersonWriteDto person = rowData.person;
     assertThat(person.firstName, equalTo("Martina"));
@@ -44,6 +44,27 @@ public class RowParserTest {
     assertThat(person.zip, equalTo("12345"));
     assertThat(person.city, equalTo("Berlin"));
     assertThat(person.phone, equalTo("030/123123"));
+    assertThat(person.mobile, nullValue());
+    assertThat(person.emailAddress, equalTo("muster.mann@example.com"));
+    
+    MembershipCreateDto membership = rowData.membership;
+    assertThat(membership.firstDay, equalTo("21.02.2015"));
+    
+    assertFalse(rowData.lastDay.isPresent());
+  }
+  
+  @Test
+  public void secondRow() {
+    RowData rowData = lineParser.parse(csvLines.get(2));
+    PersonWriteDto person = rowData.person;
+    assertThat(person.firstName, equalTo("Martin"));
+    assertThat(person.lastName, equalTo("Mustermann"));
+    assertThat(person.birthday, equalTo("1981-01-09"));
+    assertThat(person.gender, equalTo("M"));
+    assertThat(person.street, equalTo("Musterstraße 134"));
+    assertThat(person.zip, equalTo("12343"));
+    assertThat(person.city, equalTo("Berlin"));
+    assertThat(person.phone, equalTo("030/1231243"));
     assertThat(person.mobile, nullValue());
     assertThat(person.emailAddress, equalTo("muster.mann@example.com"));
     
