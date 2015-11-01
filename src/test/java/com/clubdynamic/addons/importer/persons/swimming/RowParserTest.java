@@ -51,6 +51,8 @@ public class RowParserTest {
     assertThat(membership.firstDay, equalTo("2015-02-21"));
 
     assertFalse(rowData.lastDay.isPresent());
+    assertTrue("Should be active swimmer but isn't.", rowData.activeSwimmer);
+    assertFalse("Should not be active coach but is.", rowData.activeCoach);
   }
 
   @Test
@@ -73,6 +75,8 @@ public class RowParserTest {
 
     assertTrue(rowData.lastDay.isPresent());
     assertThat(rowData.lastDay.get(), equalTo("2015-06-30"));
+    assertTrue("Should be active swimmer but isn't.", rowData.activeSwimmer);
+    assertFalse("Should not be active coach but is.", rowData.activeCoach);
   }
 
   @Test
@@ -94,6 +98,8 @@ public class RowParserTest {
     assertThat(membership.firstDay, equalTo("2015-05-12"));
 
     assertFalse(rowData.lastDay.isPresent());
+    assertFalse("Should not be active swimmer but is.", rowData.activeSwimmer);
+    assertTrue("Should be active coach but isn't.", rowData.activeCoach);
   }
 
   @Test(expected=ParseException.class)
@@ -109,5 +115,15 @@ public class RowParserTest {
   @Test(expected=ParseException.class)
   public void invalidRowNoGender() {
     lineParser.parse(csvLines.get(6));
+  }
+  
+  @Test(expected=ParseException.class)
+  public void invalidRowInvalidBooleanActiveSwimmer() {
+    lineParser.parse(csvLines.get(7));
+  }
+  
+  @Test(expected=ParseException.class)
+  public void invalidRowEmptyBooleanActiveCoach() {
+    lineParser.parse(csvLines.get(8));
   }
 }

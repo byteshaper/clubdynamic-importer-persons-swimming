@@ -27,6 +27,8 @@ public class RowParser {
   private static final int COL_PHONE = 7;
   private static final int COL_MOBILE = 9;
   private static final int COL_EMAIL = 10;
+  private static final int COL_ACTIVE_SWIMMER = 14;
+  private static final int COL_ACTIVE_COACH = 18;
   private static final int COL_FIRST_DAY = 35;
   private static final int COL_LAST_DAY = 36;
 
@@ -48,7 +50,24 @@ public class RowParser {
     membership.firstDay = parseDate(fields, COL_FIRST_DAY, true);
 
     Optional<String> lastDay = Optional.ofNullable(parseDate(fields, COL_LAST_DAY, false));
-    return new RowData(person, membership, lastDay);
+    boolean activeSwimmer = parseBoolean(fields, COL_ACTIVE_SWIMMER);
+    boolean activeCoach = parseBoolean(fields, COL_ACTIVE_COACH);
+    return new RowData(person, membership, lastDay, activeSwimmer, activeCoach);
+  }
+
+  private boolean parseBoolean(String[] fields, int colIndex) {
+    String content = nonEmptyTrimmedStringOrDie(fields, colIndex).toLowerCase();
+
+    if (content.equals("ja")) {
+      return true;
+    } else if (content.equals("nein")) {
+      return false;
+    }
+
+    throw new ParseException(String.format("Invalid boolean value '%s' in column %d of row %s",
+        content,
+        colIndex,
+        fieldsToString(fields)));
   }
 
   private String parseDate(String[] fields, int colIndex, boolean warnOnNull) {
@@ -56,7 +75,10 @@ public class RowParser {
       return LocalDate.parse(fields[colIndex], DATE_FORMATTER).toString();
     } catch (DateTimeParseException e) {
       if (warnOnNull) {
-        LOGGER.warn("Unparseable date '{}' in row {}", fields[colIndex], fieldsToString(fields));
+        LOGGER.warn("Unparseable date '{}' in column %d of row {}",
+            fields[colIndex],
+            colIndex,
+            fieldsToString(fields));
       }
       return null;
     }
@@ -66,7 +88,7 @@ public class RowParser {
     String result = fields[colIndex].trim();
 
     if (result.isEmpty()) {
-      throw new ParseException("Empty mandatory column " + colIndex + " in row " + fieldsToString(fields) + ".");
+      throw new ParseException(String.format("Empty mandatory column %d in row %s.", colIndex, fieldsToString(fields)));
     }
 
     return result;

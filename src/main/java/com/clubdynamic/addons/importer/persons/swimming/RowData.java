@@ -12,16 +12,27 @@ import com.clubdynamic.dto.person.PersonWriteDto;
  *
  */
 public class RowData {
-  
+
   public final PersonWriteDto person;
-  
+
   public final MembershipCreateDto membership;
-  
+
   public final Optional<String> lastDay;
-  
-  public RowData(PersonWriteDto person, MembershipCreateDto membership, Optional<String> lastDay) {
+
+  public final boolean activeSwimmer;
+
+  public final boolean activeCoach;
+
+  public RowData(
+      PersonWriteDto person,
+      MembershipCreateDto membership,
+      Optional<String> lastDay,
+      boolean activeSwimmer,
+      boolean activeCoach) {
     this.person = person;
     this.membership = membership;
     this.lastDay = lastDay;
+    this.activeSwimmer = activeSwimmer;
+    this.activeCoach = activeCoach;
   }
 }
