@@ -1,16 +1,19 @@
 package com.clubdynamic.addons.importer.persons.swimming;
 
+import com.clubdynamic.dto.membership.MembershipCreateDto;
 import com.clubdynamic.dto.person.PersonWriteDto;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LineParser {
+public class RowParser {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(LineParser.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RowParser.class);
   private static final String FIELD_SEPARATOR = "\\|";
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
@@ -24,8 +27,10 @@ public class LineParser {
   private static final int COL_PHONE = 7;
   private static final int COL_MOBILE = 9;
   private static final int COL_EMAIL = 10;
-
-  public PersonWriteDto parse(String line) {
+  private static final int COL_FIRST_DAY = 35;
+  private static final int COL_LAST_DAY = 36;
+  
+  public RowData parse(String line) {
     PersonWriteDto person = new PersonWriteDto();
     String[] fields = line.split(FIELD_SEPARATOR);
     person.firstName = nonEmptyTrimmedStringOrNull(fields[COL_FIRSTNAME]);
@@ -38,7 +43,11 @@ public class LineParser {
     person.phone = nonEmptyTrimmedStringOrNull(fields[COL_PHONE]);
     person.mobile = nonEmptyTrimmedStringOrNull(fields[COL_MOBILE]);
     person.emailAddress = nonEmptyTrimmedStringOrNull(fields[COL_EMAIL]);
-    return person;
+    
+    MembershipCreateDto membership = new MembershipCreateDto();
+    membership.firstDay = nonEmptyTrimmedStringOrNull(fields[COL_FIRST_DAY]);
+    
+    return new RowData(person, membership, Optional.ofNullable(nonEmptyTrimmedStringOrNull(fields[COL_LAST_DAY])));
   }
 
   private String parseBirthday(String[] fields) {
